@@ -18,8 +18,9 @@
         </div>
         <div class="footer-section">
           <h4>联系我们</h4>
-          <p>📍 地址示例</p>
-          <p>📞 电话示例</p>
+          <p>📍 北京市朝阳区建国路88号 SOHO现代城A座2001室</p>
+          <p>📞 总机：010-8888 8888</p>
+          <p>📞 售后：010-8888 8889</p>
           <p>✉️ info@diagens.com</p>
         </div>
       </div>

@@ -1,21 +1,37 @@
 <template>
   <nav class="navbar">
     <div class="container">
-      <div class="logo">
+      <router-link to="/" class="logo">
         <span class="logo-icon">🏥</span>
         <span class="logo-text">Diagens</span>
-      </div>
-      <ul class="nav-links">
-        <li><router-link to="/">首页</router-link></li>
-        <li><router-link to="/products">产品中心</router-link></li>
-        <li><router-link to="/about">关于我们</router-link></li>
-        <li><router-link to="/contact">联系我们</router-link></li>
+      </router-link>
+      <button class="mobile-menu-btn" @click="toggleMenu" :class="{ active: menuOpen }">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul class="nav-links" :class="{ open: menuOpen }">
+        <li><router-link to="/" @click="closeMenu">首页</router-link></li>
+        <li><router-link to="/products" @click="closeMenu">产品中心</router-link></li>
+        <li><router-link to="/about" @click="closeMenu">关于我们</router-link></li>
+        <li><router-link to="/contact" @click="closeMenu">联系我们</router-link></li>
       </ul>
     </div>
   </nav>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const menuOpen = ref(false)
+
+const toggleMenu = () => {
+  menuOpen.value = !menuOpen.value
+}
+
+const closeMenu = () => {
+  menuOpen.value = false
+}
 </script>
 
 <style scoped>
@@ -44,6 +60,7 @@
   color: white;
   font-size: 1.5rem;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .nav-links {
@@ -59,16 +76,78 @@
   text-decoration: none;
   font-weight: 500;
   transition: opacity 0.3s;
+  position: relative;
 }
 
-.nav-links a:hover {
-  opacity: 0.8;
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a.router-link-active::after {
+  width: 100%;
+}
+
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.mobile-menu-btn span {
+  width: 25px;
+  height: 3px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.mobile-menu-btn.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.mobile-menu-btn.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
 }
 
 @media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+  
   .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #0a9396 0%, #005f73 100%);
+    flex-direction: column;
+    padding: 1rem 2rem;
     gap: 1rem;
-    font-size: 0.9rem;
+    display: none;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  
+  .nav-links.open {
+    display: flex;
   }
 }
 </style>
