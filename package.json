@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix",
-    "preview-dist": "vite preview --dist"
+    "preview-dist": "vite preview --dist",
+    "test": "echo 'No test suite configured'"
   },
   "dependencies": {
     "vue": "^3.4.0",
