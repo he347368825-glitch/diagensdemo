@@ -57,15 +57,35 @@ if [ "$ISSUE_COUNT" -gt 0 ]; then
 - 修复时间: $(date +%Y-%m-%d)
 - 状态: 待审核"
 
-    curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+    PR_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST -H "Authorization: token $GITHUB_TOKEN" \
       -d "{\"title\":\"fix: 处理 Issue #$ISSUE_NUM\",\"body\":\"$PR_BODY\",\"base\":\"dev\",\"head\":\"$BRANCH_NAME\"}" \
-      "https://api.github.com/repos/$REPO/pulls" | grep -o '"html_url": "[^"]*"' || echo "PR 创建成功"
+      "https://api.github.com/repos/$REPO/pulls")
+
+    PR_STATUS=$(echo "$PR_RESPONSE" | tail -1)
+    PR_BODY_ONLY=$(echo "$PR_RESPONSE" | sed '$d')
+
+    if [ "$PR_STATUS" = "201" ]; then
+        PR_URL=$(echo "$PR_BODY_ONLY" | grep -o '"html_url": "[^"]*"' | sed 's/"html_url": "//;s/"$//')
+        echo "✅ PR 创建成功: $PR_URL"
+    else
+        echo "❌ PR 创建失败 (HTTP $PR_STATUS): $PR_BODY_ONLY"
+    fi
 
     # 创建 MR 到 main (API)
     echo "🔀 创建 MR 到 main..."
-    curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+    MR_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST -H "Authorization: token $GITHUB_TOKEN" \
       -d "{\"title\":\"fix: 处理 Issue #$ISSUE_NUM\",\"body\":\"$PR_BODY\",\"base\":\"main\",\"head\":\"$BRANCH_NAME\"}" \
-      "https://api.github.com/repos/$REPO/pulls" | grep -o '"html_url": "[^"]*"' || echo "MR 创建成功"
+      "https://api.github.com/repos/$REPO/pulls")
+
+    MR_STATUS=$(echo "$MR_RESPONSE" | tail -1)
+    MR_BODY_ONLY=$(echo "$MR_RESPONSE" | sed '$d')
+
+    if [ "$MR_STATUS" = "201" ]; then
+        MR_URL=$(echo "$MR_BODY_ONLY" | grep -o '"html_url": "[^"]*"' | sed 's/"html_url": "//;s/"$//')
+        echo "✅ MR 创建成功: $MR_URL"
+    else
+        echo "❌ MR 创建失败 (HTTP $MR_STATUS): $MR_BODY_ONLY"
+    fi
 
     echo "✅ 完成 Issue 处理"
 
@@ -131,9 +151,19 @@ OPTIMIZE
 
     # 创建 PR (API)
     echo "📝 创建优化 PR..."
-    curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+    PR_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST -H "Authorization: token $GITHUB_TOKEN" \
       -d "{\"title\":\"chore: 日常优化 $(date +%Y-%m-%d)\",\"body\":\"每日优化建议\",\"base\":\"dev\",\"head\":\"$BRANCH_NAME\"}" \
-      "https://api.github.com/repos/$REPO/pulls" | grep -o '"html_url": "[^"]*"' || echo "PR 创建成功"
+      "https://api.github.com/repos/$REPO/pulls")
+
+    PR_STATUS=$(echo "$PR_RESPONSE" | tail -1)
+    PR_BODY_ONLY=$(echo "$PR_RESPONSE" | sed '$d')
+
+    if [ "$PR_STATUS" = "201" ]; then
+        PR_URL=$(echo "$PR_BODY_ONLY" | grep -o '"html_url": "[^"]*"' | sed 's/"html_url": "//;s/"$//')
+        echo "✅ PR 创建成功: $PR_URL"
+    else
+        echo "❌ PR 创建失败 (HTTP $PR_STATUS): $PR_BODY_ONLY"
+    fi
 
     echo "✅ 完成市场调研和优化"
 fi
